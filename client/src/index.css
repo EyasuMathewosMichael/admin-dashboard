@@ -1,0 +1,59 @@
+/* Global styles and responsive layout */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f9fafb;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  /* Mobile adjustments */
+  main {
+    padding: 1rem !important;
+  }
+  
+  h1 {
+    font-size: 1.25rem !important;
+  }
+  
+  table {
+    font-size: 0.875rem;
+  }
+  
+  /* Stack buttons vertically on mobile */
+  button + button {
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 320px) {
+  /* Extra small mobile */
+  body {
+    font-size: 14px;
+  }
+}
+
+/* Ensure no horizontal scrolling */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Pulse animation for skeletons */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
