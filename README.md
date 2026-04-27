@@ -432,12 +432,6 @@ This project is ready for:
 
 ---
 
-## 📝 License
-
-This project is provided as-is for client use and customization.
-
----
-
 ## License
 
 MIT
