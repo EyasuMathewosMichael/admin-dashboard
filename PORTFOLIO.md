@@ -6,8 +6,8 @@ A full-stack admin dashboard with JWT authentication, role-based access control,
 
 This project demonstrates full-stack development with a focus on security, testing, and user experience. Built with React, Node.js, and MongoDB.
 
-**Live Demo:** [Your deployment URL]  
-**GitHub:** [Your GitHub URL]
+**Live Demo:** https://admin-dashboard-liart-two-29.vercel.app  
+**GitHub:** https://github.com/EyasuMathewosMichael/admin-dashboard
 
 ## Features
 

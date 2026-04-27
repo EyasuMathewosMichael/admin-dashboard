@@ -11,9 +11,7 @@ This is a complete, enterprise-grade admin dashboard built with modern technolog
 - Internal tools and dashboards
 - SaaS applications
 - Enterprise applications
-- Portfolio showcase
 
----
 
 ## ✨ Key Features
 
@@ -121,6 +119,9 @@ GET    /api/health                     - Server health status
 
 ## 🚀 Quick Start
 
+**Live Demo:** https://admin-dashboard-liart-two-29.vercel.app  
+**GitHub:** https://github.com/EyasuMathewosMichael/admin-dashboard
+
 ### Prerequisites
 - Node.js v24.14.1 or higher
 - npm 10.x or higher
@@ -130,7 +131,7 @@ GET    /api/health                     - Server health status
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourusername/admin-dashboard.git
+git clone https://github.com/EyasuMathewosMichael/admin-dashboard.git
 cd admin-dashboard
 ```
 

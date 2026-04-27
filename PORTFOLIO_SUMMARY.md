@@ -12,6 +12,9 @@ A production-ready admin dashboard built with React, Node.js, and MongoDB. The a
 - WCAG 2.1 AA accessibility compliance
 - <100ms average API response time
 
+**Live Demo:** https://admin-dashboard-liart-two-29.vercel.app  
+**GitHub:** https://github.com/EyasuMathewosMichael/admin-dashboard
+
 ## What It Shows
 
 **Backend Development**
