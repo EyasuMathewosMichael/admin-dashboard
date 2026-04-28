@@ -26,6 +26,24 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// ── GET /:id — get single user ────────────────────────────────────────────────
+
+router.get('/:id', async (req, res, next) => {
+  try {
+    const user = await userService.getUserById(req.params.id);
+
+    if (!user) {
+      return res.status(404).json({
+        error: { code: 'USER_NOT_FOUND', message: 'User not found' },
+      });
+    }
+
+    return res.status(200).json({ data: user });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 // ── POST / — create user ──────────────────────────────────────────────────────
 
 router.post('/', async (req, res, next) => {
