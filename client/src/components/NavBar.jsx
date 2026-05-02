@@ -77,8 +77,10 @@ export default function NavBar() {
         background: t.headerBg,
         borderBottom: `1px solid ${t.border}`,
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
-        position: 'sticky',
+        position: 'fixed',
         top: 0,
+        left: 0,
+        right: 0,
         zIndex: 1000,
         width: '100%',
       }}>

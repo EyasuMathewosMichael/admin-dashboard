@@ -88,6 +88,7 @@ export default function UserFormPage() {
     background: t.bg,
     display: 'flex',
     flexDirection: 'column',
+    paddingTop: '60px', // Add space for fixed navbar
   };
   const inputStyle = {
     width: '100%', padding: '0.5rem 0.75rem',

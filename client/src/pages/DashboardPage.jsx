@@ -86,6 +86,7 @@ export default function DashboardPage() {
     background: t.bg,
     display: 'flex',
     flexDirection: 'column',
+    paddingTop: '60px', // Add space for fixed navbar
   };
   const contentStyle = { 
     padding: '2rem', 
