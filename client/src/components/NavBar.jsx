@@ -79,7 +79,8 @@ export default function NavBar() {
         boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
         position: 'sticky',
         top: 0,
-        zIndex: 100,
+        zIndex: 1000,
+        width: '100%',
       }}>
         {/* Brand */}
         <span style={{ fontWeight: 700, fontSize: '1.125rem', color: t.text }}>
