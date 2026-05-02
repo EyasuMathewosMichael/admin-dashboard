@@ -51,6 +51,24 @@ export default function NavBar() {
 
   return (
     <>
+      {/* Global styles for responsive behavior */}
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .hamburger-btn {
+            display: flex !important;
+          }
+          .mobile-overlay {
+            display: block !important;
+          }
+          .mobile-sidebar {
+            display: flex !important;
+          }
+        }
+      `}</style>
+
       <header style={{
         display: 'flex',
         alignItems: 'center',
@@ -69,18 +87,14 @@ export default function NavBar() {
         </span>
 
         {/* Desktop Nav links - hidden on mobile */}
-        <nav style={{ 
-          display: 'flex', 
-          gap: '0.5rem', 
-          alignItems: 'center',
-        }}>
-          <style>{`
-            @media (max-width: 768px) {
-              nav {
-                display: none !important;
-              }
-            }
-          `}</style>
+        <nav 
+          className="desktop-nav"
+          style={{ 
+            display: 'flex', 
+            gap: '0.5rem', 
+            alignItems: 'center',
+          }}
+        >
           {navLink('Dashboard', '/dashboard')}
           {navLink('Users', '/users')}
         </nav>
@@ -91,6 +105,7 @@ export default function NavBar() {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
+            className="hamburger-btn"
             style={{
               width: 36, 
               height: 36,
@@ -104,15 +119,7 @@ export default function NavBar() {
               fontSize: '1.25rem',
               padding: 0,
             }}
-            className="hamburger-btn"
           >
-            <style>{`
-              @media (max-width: 768px) {
-                .hamburger-btn {
-                  display: flex !important;
-                }
-              }
-            `}</style>
             {mobileMenuOpen ? '✕' : '☰'}
           </button>
 
@@ -159,6 +166,7 @@ export default function NavBar() {
           {/* Overlay */}
           <div
             onClick={() => setMobileMenuOpen(false)}
+            className="mobile-overlay"
             style={{
               position: 'fixed',
               top: 0,
@@ -169,19 +177,11 @@ export default function NavBar() {
               zIndex: 998,
               display: 'none',
             }}
-            className="mobile-overlay"
-          >
-            <style>{`
-              @media (max-width: 768px) {
-                .mobile-overlay {
-                  display: block !important;
-                }
-              }
-            `}</style>
-          </div>
+          />
 
           {/* Sidebar */}
           <aside
+            className="mobile-sidebar"
             style={{
               position: 'fixed',
               top: 0,
@@ -198,16 +198,7 @@ export default function NavBar() {
               gap: '1rem',
               overflowY: 'auto',
             }}
-            className="mobile-sidebar"
           >
-            <style>{`
-              @media (max-width: 768px) {
-                .mobile-sidebar {
-                  display: flex !important;
-                }
-              }
-            `}</style>
-
             {/* Sidebar header */}
             <div style={{
               display: 'flex',
