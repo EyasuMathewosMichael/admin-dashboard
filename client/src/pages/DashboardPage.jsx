@@ -81,8 +81,19 @@ export default function DashboardPage() {
     return registrations.filter(r => new Date(r.month + '-01') >= cutoff);
   })();
 
-  const pageStyle = { minHeight: '100vh', background: t.bg };
-  const contentStyle = { padding: '2rem', maxWidth: 1200, margin: '0 auto' };
+  const pageStyle = { 
+    minHeight: '100vh', 
+    background: t.bg,
+    display: 'flex',
+    flexDirection: 'column',
+  };
+  const contentStyle = { 
+    padding: '2rem', 
+    maxWidth: 1200, 
+    margin: '0 auto',
+    flex: 1,
+    width: '100%',
+  };
 
   if (error) {
     return (

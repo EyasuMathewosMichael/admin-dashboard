@@ -83,7 +83,12 @@ export default function UserFormPage() {
     }
   }
 
-  const pageStyle = { minHeight: '100vh', background: t.bg };
+  const pageStyle = { 
+    minHeight: '100vh', 
+    background: t.bg,
+    display: 'flex',
+    flexDirection: 'column',
+  };
   const inputStyle = {
     width: '100%', padding: '0.5rem 0.75rem',
     fontSize: '1rem', border: `1px solid ${t.inputBorder}`,
