@@ -11,35 +11,21 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f9fafb;
+  transition: background 0.2s, color 0.2s;
 }
 
 /* Responsive breakpoints */
 @media (max-width: 768px) {
-  /* Mobile adjustments */
-  main {
+  main, [data-page] {
     padding: 1rem !important;
   }
-  
-  h1 {
-    font-size: 1.25rem !important;
-  }
-  
-  table {
-    font-size: 0.875rem;
-  }
-  
-  /* Stack buttons vertically on mobile */
-  button + button {
-    margin-top: 0.5rem;
-  }
+  h1 { font-size: 1.25rem !important; }
+  table { font-size: 0.875rem; }
 }
 
-@media (max-width: 320px) {
-  /* Extra small mobile */
-  body {
-    font-size: 14px;
-  }
+@media (max-width: 480px) {
+  /* Stack header buttons on very small screens */
+  header nav { display: none; }
 }
 
 /* Ensure no horizontal scrolling */
@@ -50,10 +36,15 @@ html, body {
 
 /* Pulse animation for skeletons */
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }
+
+/* Smooth focus rings */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* Remove default select arrow styling inconsistency */
+select { appearance: auto; }

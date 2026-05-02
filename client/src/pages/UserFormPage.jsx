@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import axiosClient from '../api/axiosClient';
+import NavBar from '../components/NavBar';
 
 export default function UserFormPage() {
   const navigate = useNavigate();
-  const auth = useAuth();
+  const { user: currentUser } = useAuth();
+  const t = useTheme();
+  const toast = useToast();
   const { id } = useParams();
   const isEditMode = !!id;
+  const isOwnProfile = id === currentUser?.sub;
 
   const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'user' });
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(isEditMode);
   const [submitting, setSubmitting] = useState(false);
-
-  const handleLogout = () => {
-    auth.logout();
-    navigate('/login', { replace: true });
-  };
 
   useEffect(() => {
     if (isEditMode) {
@@ -51,23 +52,22 @@ export default function UserFormPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setServerError('');
-
     const validationErrors = validate();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
     setErrors({});
     setSubmitting(true);
-
     try {
       if (isEditMode) {
         const payload = { name: formData.name, email: formData.email, role: formData.role };
         if (formData.password) payload.password = formData.password;
         await axiosClient.put(`/api/users/${id}`, payload);
+        toast.add('User updated successfully.', 'success');
       } else {
         await axiosClient.post('/api/users', formData);
+        toast.add('User created successfully.', 'success');
       }
       navigate('/users');
     } catch (err) {
@@ -83,270 +83,144 @@ export default function UserFormPage() {
     }
   }
 
+  const pageStyle = { minHeight: '100vh', background: t.bg };
+  const inputStyle = {
+    width: '100%', padding: '0.5rem 0.75rem',
+    fontSize: '1rem', border: `1px solid ${t.inputBorder}`,
+    borderRadius: 4, background: t.inputBg, color: t.text,
+    outline: 'none', boxSizing: 'border-box',
+  };
+
   if (loading) {
     return (
-      <main style={styles.main}>
-        <div style={styles.header}>
-          <h1 style={styles.headerTitle}>Admin Dashboard</h1>
-          <div style={styles.headerButtons}>
-            <button onClick={() => navigate('/dashboard')} style={styles.navButton}>
-              Dashboard
-            </button>
-            <button onClick={() => navigate('/users')} style={styles.navButton}>
-              Users
-            </button>
-            <button onClick={handleLogout} style={styles.logoutButton}>
-              Logout
-            </button>
-          </div>
+      <div style={pageStyle}>
+        <NavBar />
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '4rem 2rem' }}>
+          <div style={{ width: '100%', maxWidth: 500, height: 300, background: t.skeletonBg, borderRadius: 8, animation: 'pulse 1.5s ease-in-out infinite' }} />
         </div>
-        <div style={styles.container}>
-          <p>Loading...</p>
-        </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main style={styles.main}>
-      {/* Header with navigation */}
-      <div style={styles.header}>
-        <h1 style={styles.headerTitle}>Admin Dashboard</h1>
-        <div style={styles.headerButtons}>
-          <button onClick={() => navigate('/dashboard')} style={styles.navButton}>
-            Dashboard
-          </button>
-          <button onClick={() => navigate('/users')} style={styles.navButton}>
-            Users
-          </button>
-          <button onClick={handleLogout} style={styles.logoutButton}>
-            Logout
-          </button>
-        </div>
-      </div>
-
-      {/* Form container */}
-      <div style={styles.container}>
-        <div style={styles.card}>
-          <h2 style={styles.heading}>{isEditMode ? 'Edit User' : 'Add User'}</h2>
+    <div style={pageStyle}>
+      <NavBar />
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: '2rem' }}>
+        <div style={{
+          width: '100%', maxWidth: 500,
+          background: t.surface, border: `1px solid ${t.border}`,
+          borderRadius: 10, padding: '2rem',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+        }}>
+          <h2 style={{ margin: '0 0 1.5rem', fontSize: '1.375rem', fontWeight: 700, color: t.text }}>
+            {isEditMode ? (isOwnProfile ? 'My Profile' : 'Edit User') : 'Add User'}
+          </h2>
 
           {serverError && (
-            <div role="alert" style={styles.serverError}>{serverError}</div>
+            <div role="alert" style={{
+              marginBottom: '1rem', padding: '0.75rem 1rem',
+              background: '#fef2f2', border: '1px solid #fecaca',
+              borderRadius: 4, fontSize: '0.875rem', color: '#b91c1c',
+            }}>
+              {serverError}
+            </div>
           )}
 
-          <form onSubmit={handleSubmit} noValidate style={styles.form}>
-            <div style={styles.fieldGroup}>
-              <label htmlFor="name" style={styles.label}>Name</label>
-              <input
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                aria-invalid={!!errors.name}
-                style={{ ...styles.input, ...(errors.name ? styles.inputError : {}) }}
-                required
-              />
-              {errors.name && <span role="alert" style={styles.fieldError}>{errors.name}</span>}
-            </div>
-
-            <div style={styles.fieldGroup}>
-              <label htmlFor="email" style={styles.label}>Email</label>
-              <input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                aria-invalid={!!errors.email}
-                style={{ ...styles.input, ...(errors.email ? styles.inputError : {}) }}
-                required
-              />
-              {errors.email && <span role="alert" style={styles.fieldError}>{errors.email}</span>}
-            </div>
-
-            <div style={styles.fieldGroup}>
-              <label htmlFor="role" style={styles.label}>Role</label>
-              <select
-                id="role"
-                value={formData.role}
-                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                aria-invalid={!!errors.role}
-                style={{ ...styles.input, ...(errors.role ? styles.inputError : {}) }}
-                required
-              >
-                <option value="user">User</option>
-                <option value="admin">Admin</option>
-              </select>
-              {errors.role && <span role="alert" style={styles.fieldError}>{errors.role}</span>}
-            </div>
-
-            <div style={styles.fieldGroup}>
-              <label htmlFor="password" style={styles.label}>
-                Password {isEditMode && <span style={{ fontWeight: 400, color: '#6b7280' }}>(leave blank to keep current)</span>}
+          <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div>
+              <label htmlFor="name" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: t.text, marginBottom: '0.25rem' }}>
+                Name
               </label>
               <input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                aria-invalid={!!errors.password}
-                style={{ ...styles.input, ...(errors.password ? styles.inputError : {}) }}
-                required={!isEditMode}
+                id="name" type="text"
+                value={formData.name}
+                onChange={e => setFormData({ ...formData, name: e.target.value })}
+                aria-invalid={!!errors.name}
+                style={{ ...inputStyle, ...(errors.name ? { borderColor: '#dc2626' } : {}) }}
+                required
               />
-              {errors.password && <span role="alert" style={styles.fieldError}>{errors.password}</span>}
+              {errors.name && <span role="alert" style={{ fontSize: '0.8125rem', color: '#dc2626' }}>{errors.name}</span>}
             </div>
 
-            <div style={styles.actions}>
-              <button type="button" onClick={() => navigate('/users')} style={styles.cancelBtn}>
+            <div>
+              <label htmlFor="email" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: t.text, marginBottom: '0.25rem' }}>
+                Email
+              </label>
+              <input
+                id="email" type="email"
+                value={formData.email}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
+                aria-invalid={!!errors.email}
+                style={{ ...inputStyle, ...(errors.email ? { borderColor: '#dc2626' } : {}) }}
+                required
+              />
+              {errors.email && <span role="alert" style={{ fontSize: '0.8125rem', color: '#dc2626' }}>{errors.email}</span>}
+            </div>
+
+            {/* Hide role selector when editing own profile */}
+            {!isOwnProfile && (
+              <div>
+                <label htmlFor="role" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: t.text, marginBottom: '0.25rem' }}>
+                  Role
+                </label>
+                <select
+                  id="role"
+                  value={formData.role}
+                  onChange={e => setFormData({ ...formData, role: e.target.value })}
+                  style={{ ...inputStyle, cursor: 'pointer' }}
+                  required
+                >
+                  <option value="user">User</option>
+                  <option value="admin">Admin</option>
+                </select>
+                {errors.role && <span role="alert" style={{ fontSize: '0.8125rem', color: '#dc2626' }}>{errors.role}</span>}
+              </div>
+            )}
+
+            <div>
+              <label htmlFor="password" style={{ display: 'block', fontSize: '0.875rem', fontWeight: 500, color: t.text, marginBottom: '0.25rem' }}>
+                Password{' '}
+                {isEditMode && <span style={{ fontWeight: 400, color: t.textMuted }}>(leave blank to keep current)</span>}
+              </label>
+              <input
+                id="password" type="password"
+                value={formData.password}
+                onChange={e => setFormData({ ...formData, password: e.target.value })}
+                aria-invalid={!!errors.password}
+                style={{ ...inputStyle, ...(errors.password ? { borderColor: '#dc2626' } : {}) }}
+                required={!isEditMode}
+              />
+              {errors.password && <span role="alert" style={{ fontSize: '0.8125rem', color: '#dc2626' }}>{errors.password}</span>}
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={() => navigate('/users')}
+                style={{
+                  flex: 1, padding: '0.625rem 1rem', fontSize: '1rem', fontWeight: 600,
+                  color: t.text, background: t.surfaceAlt,
+                  border: `1px solid ${t.border}`, borderRadius: 4, cursor: 'pointer',
+                }}
+              >
                 ← Back to Users
               </button>
-              <button type="submit" disabled={submitting} style={{ ...styles.submitBtn, ...(submitting ? styles.disabledBtn : {}) }}>
-                {submitting ? 'Saving...' : isEditMode ? 'Update User' : 'Create User'}
+              <button
+                type="submit"
+                disabled={submitting}
+                style={{
+                  flex: 1, padding: '0.625rem 1rem', fontSize: '1rem', fontWeight: 600,
+                  color: '#fff', background: submitting ? '#93c5fd' : t.primary,
+                  border: 'none', borderRadius: 4,
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                }}
+              >
+                {submitting ? 'Saving…' : isEditMode ? 'Update User' : 'Create User'}
               </button>
             </div>
           </form>
         </div>
       </div>
-    </main>
+    </div>
   );
 }
-
-const styles = {
-  main: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
-    backgroundColor: '#f3f4f6',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem 2rem',
-    backgroundColor: '#ffffff',
-    borderBottom: '1px solid #e5e7eb',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-  },
-  headerTitle: {
-    margin: 0,
-    fontSize: '1.5rem',
-    fontWeight: 700,
-    color: '#111827',
-  },
-  headerButtons: {
-    display: 'flex',
-    gap: '1rem',
-    alignItems: 'center',
-  },
-  navButton: {
-    padding: '0.5rem 1rem',
-    fontSize: '0.875rem',
-    fontWeight: 600,
-    color: '#2563eb',
-    backgroundColor: '#ffffff',
-    border: '1px solid #2563eb',
-    borderRadius: 6,
-    cursor: 'pointer',
-    transition: 'all 0.15s',
-  },
-  logoutButton: {
-    padding: '0.5rem 1rem',
-    fontSize: '0.875rem',
-    fontWeight: 600,
-    color: '#ffffff',
-    backgroundColor: '#dc2626',
-    border: 'none',
-    borderRadius: 6,
-    cursor: 'pointer',
-    transition: 'background-color 0.15s',
-  },
-  container: {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '2rem',
-  },
-  card: {
-    width: '100%',
-    maxWidth: 500,
-    backgroundColor: '#ffffff',
-    borderRadius: 8,
-    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.12)',
-    padding: '2rem',
-  },
-  heading: {
-    margin: '0 0 1.5rem',
-    fontSize: '1.5rem',
-    fontWeight: 600,
-    color: '#111827',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '1.25rem',
-  },
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.25rem',
-  },
-  label: {
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    color: '#374151',
-  },
-  input: {
-    padding: '0.5rem 0.75rem',
-    fontSize: '1rem',
-    border: '1px solid #d1d5db',
-    borderRadius: 4,
-    outline: 'none',
-  },
-  inputError: {
-    borderColor: '#dc2626',
-  },
-  fieldError: {
-    fontSize: '0.8125rem',
-    color: '#dc2626',
-  },
-  serverError: {
-    marginBottom: '1rem',
-    padding: '0.75rem 1rem',
-    backgroundColor: '#fef2f2',
-    border: '1px solid #fecaca',
-    borderRadius: 4,
-    fontSize: '0.875rem',
-    color: '#b91c1c',
-  },
-  actions: {
-    display: 'flex',
-    gap: '0.75rem',
-    marginTop: '0.5rem',
-  },
-  cancelBtn: {
-    flex: 1,
-    padding: '0.625rem 1rem',
-    fontSize: '1rem',
-    fontWeight: 600,
-    color: '#374151',
-    backgroundColor: '#f3f4f6',
-    border: '1px solid #d1d5db',
-    borderRadius: 4,
-    cursor: 'pointer',
-  },
-  submitBtn: {
-    flex: 1,
-    padding: '0.625rem 1rem',
-    fontSize: '1rem',
-    fontWeight: 600,
-    color: '#ffffff',
-    backgroundColor: '#2563eb',
-    border: 'none',
-    borderRadius: 4,
-    cursor: 'pointer',
-  },
-  disabledBtn: {
-    backgroundColor: '#93c5fd',
-    cursor: 'not-allowed',
-  },
-};

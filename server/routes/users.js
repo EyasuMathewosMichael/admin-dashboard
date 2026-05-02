@@ -15,10 +15,13 @@ router.use(verifyToken, requireRole('admin'));
 
 router.get('/', async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
+    const page     = parseInt(req.query.page, 10)     || 1;
     const pageSize = parseInt(req.query.pageSize, 10) || 20;
+    const search   = req.query.search   || '';
+    const role     = req.query.role     || '';
+    const status   = req.query.status   || '';
 
-    const result = await userService.listUsers({ page, pageSize });
+    const result = await userService.listUsers({ page, pageSize, search, role, status });
 
     return res.status(200).json(result);
   } catch (err) {

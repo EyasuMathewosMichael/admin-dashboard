@@ -31,28 +31,38 @@ async function createUser({ name, email, password, role }) {
 }
 
 // ---------------------------------------------------------------------------
-// List users (paginated)
+// List users (paginated, with optional search/filter)
 // ---------------------------------------------------------------------------
 
 /**
- * Return a paginated list of all users (no passwordHash).
- * @param {{ page?: number, pageSize?: number }} options
- * @returns {Promise<{ data: object[], pagination: { page: number, pageSize: number, total: number, totalPages: number } }>}
+ * Return a paginated list of users (no passwordHash).
+ * @param {{ page?: number, pageSize?: number, search?: string, role?: string, status?: string }} options
  */
-async function listUsers({ page = 1, pageSize = 20 } = {}) {
+async function listUsers({ page = 1, pageSize = 20, search = '', role = '', status = '' } = {}) {
+  const query = {};
+
+  if (search) {
+    query.$or = [
+      { name:  { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } },
+    ];
+  }
+  if (role)   query.role     = role;
+  if (status) query.isActive = status === 'active';
+
   const [users, total] = await Promise.all([
-    User.find()
+    User.find(query)
       .select('-passwordHash')
       .sort({ createdAt: -1 })
       .skip((page - 1) * pageSize)
       .limit(pageSize),
-    User.countDocuments(),
+    User.countDocuments(query),
   ]);
 
   const totalPages = Math.ceil(total / pageSize);
 
   return {
-    data: users.map((u) => u.toObject()),
+    data: users.map(u => u.toObject()),
     pagination: { page, pageSize, total, totalPages },
   };
 }
